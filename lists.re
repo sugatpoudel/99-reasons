@@ -1,6 +1,6 @@
 open Printf;
 
-/* find the last element of a list */
+/* 1. find the last element of a list */
 let rec last (lst: list 'a) :option 'a =>
   switch lst {
   | [] => None
@@ -8,7 +8,7 @@ let rec last (lst: list 'a) :option 'a =>
   | [_, ...tl] => last tl
   };
 
-/* find the second to last element of a list */
+/* 2. find the second to last element of a list */
 let rec penultimate (lst: list 'a) :option 'a =>
   switch lst {
   | []
@@ -17,21 +17,21 @@ let rec penultimate (lst: list 'a) :option 'a =>
   | [_, ...tl] => penultimate tl
   };
 
-/* find the nth element of a list */
+/* 3. find the nth element of a list */
 let rec find_nth (n: int, lst: list 'a) :option 'a =>
   switch lst {
   | [] => None
   | [hd, ...tl] => n == 1 ? Some hd : find_nth (n - 1, tl)
   };
 
-/* find the length of a list */
+/* 4. find the length of a list */
 let rec length (lst: list 'a) :int =>
   switch lst {
   | [] => 0
   | [_, ...tl] => 1 + length tl
   };
 
-/* find the length of a list (tail call) */
+/* 4.1. find the length of a list (tail call) */
 let length_tc (lst: list 'a) :int => {
   let rec aux (acc: int, lst: list 'a) :int =>
     switch lst {
@@ -41,14 +41,14 @@ let length_tc (lst: list 'a) :int => {
   aux (0, lst)
 };
 
-/* reverse a list */
+/* 5. reverse a list */
 let rec reverse (lst: list 'a) :list 'a =>
   switch lst {
   | [] => []
   | [hd, ...tl] => reverse tl @ [hd]
   };
 
-/* determine if a list is a palindrome */
+/* 6. determine if a list is a palindrome */
 let palindrome (lst: list 'a) :bool => lst == reverse lst;
 
 type node 'a =
@@ -56,7 +56,7 @@ type node 'a =
   | Many (list (node 'a));
 
 /*
-  flatten a nested list structure; this can be made tail call recursive
+  7. flatten a nested list structure; this can be made tail call recursive
   by passing around an accumulated list instead of concatenating on separate
   recursive calls
  */
@@ -67,14 +67,14 @@ let rec flatten (lst: list (node 'a)) :list 'a =>
   | [Many y, ...tl] => flatten y @ flatten tl
   };
 
-/* eliminate consecutive duplicates within a list */
+/* 8. eliminate consecutive duplicates within a list */
 let rec compress (lst: list 'a) :list 'a =>
   switch lst {
   | [x, ...[y, ..._] as tl] => x == y ? compress tl : [x] @ compress tl
   | smaller => smaller
   };
 
-/* pack consecutive duplicates of list elements into sublists */
+/* 9. pack consecutive duplicates of list elements into sublists */
 let pack (lst: list 'a) :list (list 'a) => {
   let rec aux acc cur =>
     fun
@@ -84,7 +84,7 @@ let pack (lst: list 'a) :list (list 'a) => {
   reverse (aux [] [] lst)
 };
 
-/* determine the run length encoding of a list */
+/* 10. determine the run length encoding of a list */
 let encode (lst: list 'a) :list (int, 'a) => {
   let rec aux acc count =>
     fun
@@ -99,7 +99,7 @@ type rle 'a =
   | One 'a
   | Many (int, 'a);
 
-/* modify the encode function to map the encoding into an rle */
+/* 11. modify the encode function to map the encoding into an rle */
 let encode_rle (lst: list 'a) :list (rle 'a) => {
   let map (count, str) =>
     switch count {
@@ -114,7 +114,7 @@ let rec repeat (acc: list 'a) (e: 'a) (n: int) :list 'a =>
   n == 0 ? acc : repeat [e, ...acc] e (n - 1);
 
 /*
-  convert an run length encoded list into the original list.
+  12. convert an run length encoded list into the original list.
   this process is easier implmented with a helper function that
   repeats a character n times.
  */
@@ -128,14 +128,14 @@ let decode (lst: list (rle 'a)) :list 'a => {
   aux [] (reverse lst)
 };
 
-/* duplicate the elements of a list */
+/* 14. duplicate the elements of a list */
 let rec duplicate (lst: list 'a) :list 'a =>
   switch lst {
   | [] => []
   | [hd, ...tl] => [hd, hd] @ duplicate tl
   };
 
-/* replicate the elements of a list a given number of times */
+/* 15. replicate the elements of a list a given number of times */
 let replicate (lst: list 'a) (n: int) :list 'a => {
   let rec aux acc lst n =>
     switch lst {
@@ -145,7 +145,7 @@ let replicate (lst: list 'a) (n: int) :list 'a => {
   aux [] (reverse lst) n
 };
 
-/* drop every nth element from a list */
+/* 16. drop every nth element from a list */
 let drop (lst: list 'a) (n: int) :list 'a => {
   let rec aux count =>
     fun
@@ -154,7 +154,7 @@ let drop (lst: list 'a) (n: int) :list 'a => {
   aux n lst
 };
 
-/* split a list into two parts */
+/* 17. split a list into two parts */
 let split (lst: list 'a) (n: int) :(list 'a, list 'a) => {
   let rec aux acc count =>
     fun
@@ -163,8 +163,8 @@ let split (lst: list 'a) (n: int) :(list 'a, list 'a) => {
   aux [] 1 lst
 };
 
-/* extract a slice from a list from i to k (inclusive) */
-let slice (lst: list 'a) (i: int) (k: int) => {
+/* 18. extract a slice from a list from i to k (inclusive) */
+let slice (lst: list 'a) (i: int) (k: int) :list 'a => {
   let rec aux acc count =>
     fun
     | [] => acc
@@ -173,8 +173,8 @@ let slice (lst: list 'a) (i: int) (k: int) => {
   reverse (aux [] 0 lst)
 };
 
-/* rotate a list N places to the left */
-let rotate (lst: list 'a) (n: int) => {
+/* 19. rotate a list N places to the left */
+let rotate (lst: list 'a) (n: int) :list 'a => {
   let lst = n < 0 ? reverse lst : lst;
   let n_1 = n < 0 ? n * (-1) : n;
   let rec aux acc count =>
@@ -185,14 +185,40 @@ let rotate (lst: list 'a) (n: int) => {
   n < 0 ? reverse res : res
 };
 
-/* remove the kth element of a list */
-let remove_at (k: int) (lst: list 'a) => {
+/* 20. remove the kth element of a list */
+let remove_at (k: int) (lst: list 'a) :list 'a => {
   let rec aux acc i =>
     fun
     | [] => acc
     | [hd, ...tl] => i == k ? acc @ tl : aux (acc @ [hd]) (i + 1) tl;
   aux [] 0 lst
 };
+
+/* 21. insert an element at a given position into a list */
+let insert_at (x: 'a) (k: int) (lst: list 'a) :list 'a => {
+  let rec aux acc i =>
+    fun
+    | [] => acc
+    | [hd, ...tl] as l => i == k ? acc @ [x] @ l : aux (acc @ [hd]) (i + 1) tl;
+  aux [] 0 lst
+};
+
+/* 22. create a list containing all integers in the given range */
+let range (i: int) (j: int) :list 'a => {
+  let rec aux i j => i > j ? [] : [i, ...aux (i + 1) j];
+  i > j ? reverse (aux j i) : aux i j
+};
+
+/*
+   23. extract a given number of randomly selected elements from a list.
+   We will use Random.int to return a random value within a bound. This
+   will be done n times. Each time, we will extract a value at the random
+   index and perform the operation again on the remaining list.
+ */
+let rand_select (lst: list 'a) (n: int) :list 'a => [];
+
+/* 24. draw n different numbers from a list */
+let lotto_select (i: int) (j: int) :list int => [];
 
 /* ------------------------------------------------------------------------------------- */
 /* helper function to convert a list into a string representation */
@@ -202,9 +228,9 @@ let list_to_string (lst: list 'a) (str: 'a => string) :string => {
 };
 
 let main () => {
-  let test = ["a", "b", "c", "d", "e", "f", "g", "h"];
-  let result = remove_at 3 test;
-  print_endline (list_to_string result (fun x => x))
+  /* let test = ["a", "b", "c", "d", "e", "f", "g", "h"]; */
+  let result = range 9 4;
+  print_endline (list_to_string result (fun x => string_of_int x))
 };
 
 main ();
