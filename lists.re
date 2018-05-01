@@ -240,17 +240,42 @@ let rand_select = (lst: list('a), n: int) : list('a) => {
 /* 24. draw n different numbers from a list */
 let lotto_select = (n: int, m: int) : list(int) => rand_select(range(1, m), n);
 
+/* 25. generate a random permutation of the elements of a list */
+let permutation = (lst: list('a)) : list('a) => rand_select(lst, length(lst));
+
+/*
+   26. generate all combinations of k objects chosen from n elements of a list
+   2 [a, b, c] => [[a, b], [a, c], [b, c]]
+   2 [a, b] => [[a], [b]]
+
+   The trick to this problem is that we need to account for the empty set
+   which occurs when n is 0; also recall that in general a set of size n has
+   2^n possible subsets, which stems from either having the element or not.
+   Thus we need to find combinations with an element and without it.
+
+ */
+let rec combinations = (n: int, lst: list('a)) : list(list('a)) =>
+  switch lst {
+  | [] when n == 0 => [[]]
+  | [] => []
+  | [hd, ...tl] => List.map(x => [hd, ...x], combinations(n - 1, tl)) @ combinations(n, tl)
+  };
+
 /* ------------------------------------------------------------------------------------- */
 /* helper function to convert a list into a string representation */
-let list_to_string = (lst: list('a), str: 'a => string) : string => {
+let string_of_list = (lst: list('a), str: 'a => string) : string => {
   let combine = (x, y) => x == "" ? str(y) : x ++ ", " ++ str(y);
   "[" ++ List.fold_left(combine, "", lst) ++ "]";
 };
 
+let string_of_string_list = lst => string_of_list(lst, x => x);
+
+let string_of_int_list = lst => string_of_list(lst, x => string_of_int(x));
+
 let main = () => {
-  /* let test = ["a", "b", "c", "d", "e", "f", "g", "h"]; */
-  let result = lotto_select(3, 10);
-  print_endline(list_to_string(result, x => string_of_int(x)));
+  let test = ["a", "b", "c", "d"];
+  let result = combinations(3, test);
+  string_of_list(result, string_of_string_list) |> print_endline;
 };
 
 main();
