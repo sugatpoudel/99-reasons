@@ -252,7 +252,6 @@ let permutation = (lst: list('a)) : list('a) => rand_select(lst, length(lst));
    which occurs when n is 0; also recall that in general a set of size n has
    2^n possible subsets, which stems from either having the element or not.
    Thus we need to find combinations with an element and without it.
-
  */
 let rec combinations = (n: int, lst: list('a)) : list(list('a)) =>
   switch lst {
@@ -260,6 +259,23 @@ let rec combinations = (n: int, lst: list('a)) : list(list('a)) =>
   | [] => []
   | [hd, ...tl] => List.map(x => [hd, ...x], combinations(n - 1, tl)) @ combinations(n, tl)
   };
+
+/*
+   27. group the elements of a set into disjoint sets.
+   In how many ways can a group of 9 people work in groups of 2, 3, and 4 persons.
+ */
+let disjoint = (lst: list('a), sizes: list(int)) : list(list(list('a))) => {
+  /* extracts all elements in 'lst' that are not in 'sub' */
+  let rest = (lst, sub) => List.filter(x => ! List.mem(x, sub), lst);
+  let rec r_combos = (lst, sizes) =>
+    switch sizes {
+    | [] => [[]]
+    | [hd, ...tl] =>
+      let disjoints = l => List.map(res => [l, ...res], r_combos(rest(lst, l), tl));
+      List.fold_left((a, b) => a @ disjoints(b), [], combinations(hd, lst));
+    };
+  r_combos(lst, sizes);
+};
 
 /* ------------------------------------------------------------------------------------- */
 /* helper function to convert a list into a string representation */
@@ -274,8 +290,9 @@ let string_of_int_list = lst => string_of_list(lst, x => string_of_int(x));
 
 let main = () => {
   let test = ["a", "b", "c", "d"];
-  let result = combinations(3, test);
-  string_of_list(result, string_of_string_list) |> print_endline;
+  let result = disjoint(test, [2, 1]);
+  List.iter(lst => print_endline(string_of_list(lst, string_of_string_list)), result);
+  /* string_of_list(result, x => string_of_list(x, string_of_string_list)) |> print_endline; */
 };
 
 main();
