@@ -75,13 +75,15 @@ let rec compress = (lst: list('a)) : list('a) =>
   };
 
 /* 9. pack consecutive duplicates of list elements into sublists */
-let pack = (lst: list('a)) : list(list('a)) => {
+let pack = (cmp: ('a, 'a) => int, lst: list('a)) : list(list('a)) => {
   let rec aux = (acc, cur) =>
     fun
     | [] => []
     | [hd] => [[hd, ...cur], ...acc]
-    | [x, ...[y, ..._] as tl] =>
-      x == y ? aux(acc, [x, ...cur], tl) : aux([[x, ...cur], ...acc], [], tl);
+    | [x, ...[y, ..._] as tl] => {
+        let cmp_val = cmp(x, y);
+        cmp_val == 0 ? aux(acc, [x, ...cur], tl) : aux([[x, ...cur], ...acc], [], tl);
+      };
   reverse(aux([], [], lst));
 };
 
@@ -311,7 +313,23 @@ let length_sort = (lst: list(list('a))) : list(list('a)) => {
 };
 
 /* sorting based on sublist frequency */
-let frequency_sort = (lst: list(list('a))) : list(list('a)) => [];
+let frequency_sort = (lst: list(list('a))) : list(list('a)) => {
+  let len_sorted = length_sort(lst);
+  let packed = pack((l1, l2) => length(l1) - length(l2), len_sorted);
+  let mapped = List.map(l => (length(l), l), packed);
+  let cmp_tups = (t1, t2) => {
+    let (a, _) = t1;
+    let (b, _) = t2;
+    a - b;
+  };
+  let sorted = merge_sort(cmp_tups, mapped);
+  let map_lsts = tup => {
+    let (f, lst) = tup;
+    lst;
+  };
+  let mapped_lsts = List.map(map_lsts, sorted);
+  List.fold_left((a, b) => a @ b, [], mapped_lsts);
+};
 
 /* ------------------------------------------------------------------------------------- */
 /* helper function to convert a list into a string representation */
@@ -334,7 +352,7 @@ let main = () => {
     ["m", "n"],
     ["o"]
   ];
-  let result = length_sort(test);
+  let result = frequency_sort(test);
   string_of_list(result, string_of_string_list) |> print_endline;
   /* List.iter(lst => print_endline(string_of_list(lst, string_of_string_list)), result); */
   /* string_of_list(result, x => string_of_list(x, string_of_string_list)) |> print_endline; */
