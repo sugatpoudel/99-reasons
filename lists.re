@@ -287,7 +287,7 @@ let rec halve = (lst: list('a)) : (list('a), list('a)) =>
     ([hd, ...l2], l1);
   };
 
-let rec merge = (cmp: ('a, 'a) => int, l1: list(int), l2: list(int)) : list(int) =>
+let rec merge = (cmp: ('a, 'a) => int, l1: list('a), l2: list('a)) : list('a) =>
   switch (l1, l2) {
   | ([], _) => l2
   | (_, []) => l1
@@ -295,7 +295,7 @@ let rec merge = (cmp: ('a, 'a) => int, l1: list(int), l2: list(int)) : list(int)
     cmp(h_1, h_2) < 0 ? [h_1, ...merge(cmp, t_1, l2)] : [h_2, ...merge(cmp, l1, t_2)]
   };
 
-let rec merge_sort = (cmp: ('a, 'a) => int, lst: list('a)) : list(int) =>
+let rec merge_sort = (cmp: ('a, 'a) => int, lst: list('a)) : list('a) =>
   switch lst {
   | []
   | [_] => lst
@@ -303,6 +303,15 @@ let rec merge_sort = (cmp: ('a, 'a) => int, lst: list('a)) : list(int) =>
     let (l1, l2) = halve(lst);
     merge(cmp, merge_sort(cmp, l1), merge_sort(cmp, l2));
   };
+
+/* sorting based on sublists */
+let length_sort = (lst: list(list('a))) : list(list('a)) => {
+  let cmp = (l1, l2) => length(l1) - length(l2);
+  merge_sort(cmp, lst);
+};
+
+/* sorting based on sublist frequency */
+let frequency_sort = (lst: list(list('a))) : list(list('a)) => [];
 
 /* ------------------------------------------------------------------------------------- */
 /* helper function to convert a list into a string representation */
@@ -316,16 +325,17 @@ let string_of_string_list = lst => string_of_list(lst, x => x);
 let string_of_int_list = lst => string_of_list(lst, x => string_of_int(x));
 
 let main = () => {
-  let test = [1, 5, 3, 7, 4, 7, 1, 2, 0];
-  let (r_1, r_2) = halve(test);
-  string_of_int_list(r_1) |> print_endline;
-  string_of_int_list(r_2) |> print_endline;
-  let res_1 = merge((a, b) => a - b, r_1, r_2);
-  string_of_int_list(res_1) |> print_endline;
-  let res_2 = List.merge((a, b) => a - b, r_1, r_2);
-  string_of_int_list(res_2) |> print_endline;
-  let sorted = merge_sort((a, b) => a - b, test);
-  string_of_int_list(sorted) |> print_endline;
+  let test = [
+    ["a", "b", "c"],
+    ["d", "e"],
+    ["f", "g", "h"],
+    ["d", "e"],
+    ["i", "j", "k", "l"],
+    ["m", "n"],
+    ["o"]
+  ];
+  let result = length_sort(test);
+  string_of_list(result, string_of_string_list) |> print_endline;
   /* List.iter(lst => print_endline(string_of_list(lst, string_of_string_list)), result); */
   /* string_of_list(result, x => string_of_list(x, string_of_string_list)) |> print_endline; */
 };
