@@ -277,6 +277,33 @@ let disjoint = (lst: list('a), sizes: list(int)) : list(list(list('a))) => {
   r_combos(lst, sizes);
 };
 
+/* 28. Sort a list according to a length of sublists */
+/* halves a list but does not maintain original order i.e. unstable */
+let rec halve = (lst: list('a)) : (list('a), list('a)) =>
+  switch lst {
+  | ([] | [_]) as l1 => (l1, [])
+  | [hd, ...tl] =>
+    let (l1, l2) = halve(tl);
+    ([hd, ...l2], l1);
+  };
+
+let rec merge = (cmp: ('a, 'a) => int, l1: list(int), l2: list(int)) : list(int) =>
+  switch (l1, l2) {
+  | ([], _) => l2
+  | (_, []) => l1
+  | ([h_1, ...t_1], [h_2, ...t_2]) =>
+    cmp(h_1, h_2) < 0 ? [h_1, ...merge(cmp, t_1, l2)] : [h_2, ...merge(cmp, l1, t_2)]
+  };
+
+let rec merge_sort = (cmp: ('a, 'a) => int, lst: list('a)) : list(int) =>
+  switch lst {
+  | []
+  | [_] => lst
+  | _ =>
+    let (l1, l2) = halve(lst);
+    merge(cmp, merge_sort(cmp, l1), merge_sort(cmp, l2));
+  };
+
 /* ------------------------------------------------------------------------------------- */
 /* helper function to convert a list into a string representation */
 let string_of_list = (lst: list('a), str: 'a => string) : string => {
@@ -289,9 +316,17 @@ let string_of_string_list = lst => string_of_list(lst, x => x);
 let string_of_int_list = lst => string_of_list(lst, x => string_of_int(x));
 
 let main = () => {
-  let test = ["a", "b", "c", "d"];
-  let result = disjoint(test, [2, 1]);
-  List.iter(lst => print_endline(string_of_list(lst, string_of_string_list)), result);
+  let test = [1, 5, 3, 7, 4, 7, 1, 2, 0];
+  let (r_1, r_2) = halve(test);
+  string_of_int_list(r_1) |> print_endline;
+  string_of_int_list(r_2) |> print_endline;
+  let res_1 = merge((a, b) => a - b, r_1, r_2);
+  string_of_int_list(res_1) |> print_endline;
+  let res_2 = List.merge((a, b) => a - b, r_1, r_2);
+  string_of_int_list(res_2) |> print_endline;
+  let sorted = merge_sort((a, b) => a - b, test);
+  string_of_int_list(sorted) |> print_endline;
+  /* List.iter(lst => print_endline(string_of_list(lst, string_of_string_list)), result); */
   /* string_of_list(result, x => string_of_list(x, string_of_string_list)) |> print_endline; */
 };
 
