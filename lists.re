@@ -348,5 +348,4 @@ let main = () => {
   /* List.iter(lst => print_endline(string_of_list(lst, string_of_string_list)), result); */
   /* string_of_list(result, x => string_of_list(x, string_of_string_list)) |> print_endline; */
 };
-
-main();
+/* main(); */
