@@ -314,21 +314,12 @@ let length_sort = (lst: list(list('a))) : list(list('a)) => {
 
 /* sorting based on sublist frequency */
 let frequency_sort = (lst: list(list('a))) : list(list('a)) => {
-  let len_sorted = length_sort(lst);
-  let packed = pack((l1, l2) => length(l1) - length(l2), len_sorted);
+  let packed = pack((l1, l2) => length(l1) - length(l2), length_sort(lst));
   let mapped = List.map(l => (length(l), l), packed);
-  let cmp_tups = (t1, t2) => {
-    let (a, _) = t1;
-    let (b, _) = t2;
-    a - b;
-  };
+  let cmp_tups = ((a, _), (b, _)) => a - b;
   let sorted = merge_sort(cmp_tups, mapped);
-  let map_lsts = tup => {
-    let (f, lst) = tup;
-    lst;
-  };
-  let mapped_lsts = List.map(map_lsts, sorted);
-  List.fold_left((a, b) => a @ b, [], mapped_lsts);
+  let map_lsts = ((f, lst)) => lst;
+  List.fold_left((a, b) => a @ b, [], List.map(map_lsts, sorted));
 };
 
 /* ------------------------------------------------------------------------------------- */
