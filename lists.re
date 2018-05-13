@@ -1,5 +1,3 @@
-open Printf;
-
 /* 1. find the last element of a list */
 let rec last = (lst: list('a)) : option('a) =>
   switch lst {
@@ -82,7 +80,8 @@ let pack = (cmp: ('a, 'a) => int, lst: list('a)) : list(list('a)) => {
     | [hd] => [[hd, ...cur], ...acc]
     | [x, ...[y, ..._] as tl] => {
         let cmp_val = cmp(x, y);
-        cmp_val == 0 ? aux(acc, [x, ...cur], tl) : aux([[x, ...cur], ...acc], [], tl);
+        cmp_val == 0 ?
+          aux(acc, [x, ...cur], tl) : aux([[x, ...cur], ...acc], [], tl);
       };
   reverse(aux([], [], lst));
 };
@@ -161,7 +160,8 @@ let split = (lst: list('a), n: int) : (list('a), list('a)) => {
   let rec aux = (acc, count) =>
     fun
     | [] => (acc, [])
-    | [hd, ...tl] => count == n ? (acc @ [hd], tl) : aux(acc @ [hd], count + 1, tl);
+    | [hd, ...tl] =>
+      count == n ? (acc @ [hd], tl) : aux(acc @ [hd], count + 1, tl);
   aux([], 1, lst);
 };
 
@@ -171,7 +171,8 @@ let slice = (lst: list('a), i: int, k: int) : list('a) => {
     fun
     | [] => acc
     | [hd, ...tl] =>
-      count >= i && count <= k ? aux([hd, ...acc], count + 1, tl) : aux(acc, count + 1, tl);
+      count >= i && count <= k ?
+        aux([hd, ...acc], count + 1, tl) : aux(acc, count + 1, tl);
   reverse(aux([], 0, lst));
 };
 
@@ -182,7 +183,8 @@ let rotate = (lst: list('a), n: int) : list('a) => {
   let rec aux = (acc, count) =>
     fun
     | [] => acc
-    | [hd, ...tl] as l => count == n_1 ? l @ acc : aux(acc @ [hd], count + 1, tl);
+    | [hd, ...tl] as l =>
+      count == n_1 ? l @ acc : aux(acc @ [hd], count + 1, tl);
   let res = aux([], 0, lst);
   n < 0 ? reverse(res) : res;
 };
@@ -259,7 +261,8 @@ let rec combinations = (n: int, lst: list('a)) : list(list('a)) =>
   switch lst {
   | [] when n == 0 => [[]]
   | [] => []
-  | [hd, ...tl] => List.map(x => [hd, ...x], combinations(n - 1, tl)) @ combinations(n, tl)
+  | [hd, ...tl] =>
+    List.map(x => [hd, ...x], combinations(n - 1, tl)) @ combinations(n, tl)
   };
 
 /*
@@ -273,7 +276,8 @@ let disjoint = (lst: list('a), sizes: list(int)) : list(list(list('a))) => {
     switch sizes {
     | [] => [[]]
     | [hd, ...tl] =>
-      let disjoints = l => List.map(res => [l, ...res], r_combos(rest(lst, l), tl));
+      let disjoints = l =>
+        List.map(res => [l, ...res], r_combos(rest(lst, l), tl));
       List.fold_left((a, b) => a @ disjoints(b), [], combinations(hd, lst));
     };
   r_combos(lst, sizes);
@@ -294,7 +298,8 @@ let rec merge = (cmp: ('a, 'a) => int, l1: list('a), l2: list('a)) : list('a) =>
   | ([], _) => l2
   | (_, []) => l1
   | ([h_1, ...t_1], [h_2, ...t_2]) =>
-    cmp(h_1, h_2) < 0 ? [h_1, ...merge(cmp, t_1, l2)] : [h_2, ...merge(cmp, l1, t_2)]
+    cmp(h_1, h_2) < 0 ?
+      [h_1, ...merge(cmp, t_1, l2)] : [h_2, ...merge(cmp, l1, t_2)]
   };
 
 let rec merge_sort = (cmp: ('a, 'a) => int, lst: list('a)) : list('a) =>
@@ -321,31 +326,3 @@ let frequency_sort = (lst: list(list('a))) : list(list('a)) => {
   let map_lsts = ((f, lst)) => lst;
   List.fold_left((a, b) => a @ b, [], List.map(map_lsts, sorted));
 };
-
-/* ------------------------------------------------------------------------------------- */
-/* helper function to convert a list into a string representation */
-let string_of_list = (lst: list('a), str: 'a => string) : string => {
-  let combine = (x, y) => x == "" ? str(y) : x ++ ", " ++ str(y);
-  "[" ++ List.fold_left(combine, "", lst) ++ "]";
-};
-
-let string_of_string_list = lst => string_of_list(lst, x => x);
-
-let string_of_int_list = lst => string_of_list(lst, x => string_of_int(x));
-
-let main = () => {
-  let test = [
-    ["a", "b", "c"],
-    ["d", "e"],
-    ["f", "g", "h"],
-    ["d", "e"],
-    ["i", "j", "k", "l"],
-    ["m", "n"],
-    ["o"]
-  ];
-  let result = frequency_sort(test);
-  string_of_list(result, string_of_string_list) |> print_endline;
-  /* List.iter(lst => print_endline(string_of_list(lst, string_of_string_list)), result); */
-  /* string_of_list(result, x => string_of_list(x, string_of_string_list)) |> print_endline; */
-};
-/* main(); */

@@ -11,14 +11,15 @@ let prime = (x: int) : bool => {
   aux(x - 1);
 };
 
-/* 32. greatest common divisor of two positive integers */
-let gcd = (a: int, b: int) : int => 0;
-
-/* ------------------------------------------------------------------------------------- */
-let main = () => {
-  let test = 4;
-  let result = prime(test);
-  printf("%d : %s\n", test, string_of_bool(result));
+/* 32. greatest common divisor of two positive integers using euclid's algorith */
+let gcd = (a: int, b: int) : int => {
+  let (a, b) = a > b ? (a, b) : (b, a);
+  let rec aux = (a, b) => {
+    let rem = a mod b;
+    rem == 0 ? b : aux(b, rem);
+  };
+  aux(a, b);
 };
 
-main();
+/* 33. determine if two numbers are coprime */
+let coprime = (a: int, b: int) : bool => gcd(a, b) == 1;

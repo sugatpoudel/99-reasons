@@ -1,18 +1,10 @@
 RE=rebuild
 
-all: main
+run: tests.native
+	./tests.native
 
-main: lists.native arithmetic.native
-	$(RE) arithmetic.native lists.native
-
-run: arithmetic.native
-	./arithmetic.native
-
-lists.native: lists.re
-	$(RE) lists.native
-
-arithmetic.native: arithmetic.re
-	$(RE) arithmetic.native
+tests.native: tests.re lists.re arithmetic.re
+	$(RE) tests.native
 
 clean:
 	rm -rf _build *.native
