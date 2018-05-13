@@ -15,8 +15,10 @@ let string_of_string_list = lst => string_of_list(lst, x => x);
 let string_of_int_list = lst => string_of_list(lst, x => string_of_int(x));
 
 let main = () => {
-  print_endline(string_of_int(gcd(13, 27)));
-  print_endline(string_of_int(gcd(20536, 7826)));
+  print_endline("Running test.");
+  let res = factors_m(315);
+  let res_str = string_of_list(res, ((c, i)) => sprintf("(%d, %d)", i, c));
+  print_endline(res_str);
 };
 
 main();
