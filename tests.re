@@ -16,9 +16,10 @@ let string_of_int_list = lst => string_of_list(lst, x => string_of_int(x));
 
 let main = () => {
   print_endline("Running test.");
-  let res = factors_m(315);
-  let res_str = string_of_list(res, ((c, i)) => sprintf("(%d, %d)", i, c));
-  print_endline(res_str);
+  let lst = goldbach_list(9, 20);
+  /* let res_str = string_of_list(res, ((c, i)) => sprintf("(%d, %d)", i, c)); */
+  /* print_endline(string_of_int_list(res)); */
+  string_of_list(lst, ((a, (b, c))) => sprintf("(%d, (%d, %d))", a, b, c)) |> print_endline;
 };
 
 main();
