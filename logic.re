@@ -63,3 +63,21 @@ let rec gray_code = (n: int) : list(string) =>
     let sub_gray_code = gray_code(n - 1);
     List.map(a => "0" ++ a, sub_gray_code) @ List.map(a => "1" ++ a, sub_gray_code);
   };
+
+/*
+  50. huffman, given a frequency table, determine the huffman code for each character.
+    1.  Start with as many leaves as there are symbols.
+    2.  Enqueue all leaf nodes into the first queue (by probability in increasing order so that the least
+        likely item is in the head of the queue).
+    3.  While there is more than one node in the queues:
+          1. Dequeue the two nodes with the lowest weight by examining the fronts of both queues.
+          2. Create a new internal node, with the two just-removed nodes as children (either node can be
+              either child) and the sum of their weights as the new weight.
+          3. Enqueue the new node into the rear of the second queue.
+    4. The remaining node is the root node; the tree has now been generated.
+ */
+type binary_tree('a) =
+  | None
+  | Node('a, binary_tree('a), binary_tree('a));
+
+let huffman = (fs: list((string, int))) : list((string, string)) => [];

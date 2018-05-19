@@ -1,11 +1,5 @@
 open Printf;
 
-open Lists;
-
-open Arithmetic;
-
-open Logic;
-
 /* helper function to convert a list into a string representation */
 let string_of_list = (lst: list('a), str: 'a => string) : string => {
   let combine = (x, y) => x == "" ? str(y) : x ++ ", " ++ str(y);
@@ -20,7 +14,7 @@ let string_of_bool_list = lst => string_of_list(lst, x => string_of_bool(x));
 
 let main = () => {
   print_endline("Running test.");
-  let result = gray_code(4);
+  let result = Logic.gray_code(4);
   string_of_string_list(result) |> print_endline;
 };
 
