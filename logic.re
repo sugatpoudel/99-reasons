@@ -64,6 +64,31 @@ let rec gray_code = (n: int) : list(string) =>
     List.map(a => "0" ++ a, sub_gray_code) @ List.map(a => "1" ++ a, sub_gray_code);
   };
 
+module PriorityQueue = {
+  type node('a) = ('a, int);
+  type pq('a) = list(node('a));
+  let len = (p: pq('a)) : int => List.length(p);
+  let is_empty = (p: pq('a)) : bool =>
+    switch p {
+    | [] => true
+    | _ => false
+    };
+  let rec insert = (p: pq('a), e: 'a, w: int) : pq('a) =>
+    switch p {
+    | [] => [(e, w)]
+    | [(he, hw), ...tl] => w > hw ? [(e, w), ...p] : [(he, hw), ...insert(tl, e, w)]
+    };
+  let get = (p: pq('a)) : 'a =>
+    switch p {
+    | [] => raise(Not_found)
+    | [(e, w), ...tl] => e
+    };
+};
+
+type binary_tree('a) =
+  | None
+  | Node('a, binary_tree('a), binary_tree('a));
+
 /*
   50. huffman, given a frequency table, determine the huffman code for each character.
     1.  Start with as many leaves as there are symbols.
@@ -76,8 +101,8 @@ let rec gray_code = (n: int) : list(string) =>
           3. Enqueue the new node into the rear of the second queue.
     4. The remaining node is the root node; the tree has now been generated.
  */
-type binary_tree('a) =
-  | None
-  | Node('a, binary_tree('a), binary_tree('a));
-
-let huffman = (fs: list((string, int))) : list((string, string)) => [];
+let huffman = (fs: list((string, int))) => {
+  let nodes = List.map(((e, w)) => Node((e, w), None, None), fs);
+  let pq = List.fold_left((pq, (e, w)) => PriorityQueue.insert(pq, e, w), [], fs);
+  pq;
+};

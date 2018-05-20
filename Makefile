@@ -2,17 +2,19 @@ OO=ocamlopt
 PP=refmt --print binary
 COMPILE=$(OO) -pp "$(PP)"
 SOURCES=lists.cmx arithmetic.cmx logic.cmx tests.cmx
+EXE=out
 
-out: $(SOURCES)
-	$(COMPILE) -o out $(SOURCES)
+$(EXE): $(SOURCES)
+	$(COMPILE) -o $(EXE) $(SOURCES)
 
 %.cmx: %.re
 	$(COMPILE) -c -impl $<
 
 .PHONY: run
-run: out
-	./out
+run: $(EXE)
+	./$(EXE)
 
 .PHONY: clean
 clean:
-	rm -rf _build *.native *.cm* out *.o
+	rm -rf _build
+	rm -f *.o *.cm* $(EXE)
