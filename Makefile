@@ -5,6 +5,7 @@ SOURCES=lists.cmx arithmetic.cmx logic.cmx tests.cmx
 EXE=out
 
 $(EXE): $(SOURCES)
+	$(COMPILE) -c -impl tests.re
 	$(COMPILE) -o $(EXE) $(SOURCES)
 
 %.cmx: %.re

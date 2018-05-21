@@ -32,8 +32,10 @@ let rec string_of_bool_expr = (expr: bool_expr) : string =>
   switch expr {
   | Var(v) => v
   | Not(e) => sprintf("!(%s)", string_of_bool_expr(e))
-  | And(e1, e2) => sprintf("(%s ^ %s)", string_of_bool_expr(e1), string_of_bool_expr(e2))
-  | Or(e1, e2) => sprintf("(%s v %s)", string_of_bool_expr(e1), string_of_bool_expr(e2))
+  | And(e1, e2) =>
+    sprintf("(%s ^ %s)", string_of_bool_expr(e1), string_of_bool_expr(e2))
+  | Or(e1, e2) =>
+    sprintf("(%s v %s)", string_of_bool_expr(e1), string_of_bool_expr(e2))
   };
 
 /* determine all combinations of truth values for the given list of variables */
@@ -48,7 +50,8 @@ let rec table = (vars: list(string)) : list(list(entry)) =>
 
 /* evaluate the given expression with the given variable */
 let table2 = (vars: list(string), expr: bool_expr) : list(list(bool)) => {
-  let mapper = entries => List.map(e => e.value, entries) @ [eval(entries, expr)];
+  let mapper = entries =>
+    List.map(e => e.value, entries) @ [eval(entries, expr)];
   List.map(mapper, table(vars));
 };
 
@@ -61,33 +64,9 @@ let rec gray_code = (n: int) : list(string) =>
   | 0 => [""]
   | _ =>
     let sub_gray_code = gray_code(n - 1);
-    List.map(a => "0" ++ a, sub_gray_code) @ List.map(a => "1" ++ a, sub_gray_code);
+    List.map(a => "0" ++ a, sub_gray_code)
+    @ List.map(a => "1" ++ a, sub_gray_code);
   };
-
-module PriorityQueue = {
-  type node('a) = ('a, int);
-  type pq('a) = list(node('a));
-  let len = (p: pq('a)) : int => List.length(p);
-  let is_empty = (p: pq('a)) : bool =>
-    switch p {
-    | [] => true
-    | _ => false
-    };
-  let rec insert = (p: pq('a), e: 'a, w: int) : pq('a) =>
-    switch p {
-    | [] => [(e, w)]
-    | [(he, hw), ...tl] => w > hw ? [(e, w), ...p] : [(he, hw), ...insert(tl, e, w)]
-    };
-  let get = (p: pq('a)) : 'a =>
-    switch p {
-    | [] => raise(Not_found)
-    | [(e, w), ...tl] => e
-    };
-};
-
-type binary_tree('a) =
-  | None
-  | Node('a, binary_tree('a), binary_tree('a));
 
 /*
   50. huffman, given a frequency table, determine the huffman code for each character.
@@ -101,8 +80,39 @@ type binary_tree('a) =
           3. Enqueue the new node into the rear of the second queue.
     4. The remaining node is the root node; the tree has now been generated.
  */
-let huffman = (fs: list((string, int))) => {
-  let nodes = List.map(((e, w)) => Node((e, w), None, None), fs);
-  let pq = List.fold_left((pq, (e, w)) => PriorityQueue.insert(pq, e, w), [], fs);
-  pq;
+module PriorityQueue = {
+  type pq('a) = list(('a, int));
+  let rec insert = (p: pq('a), e: 'a, w: int) : pq('a) =>
+    switch p {
+    | [] => [(e, w)]
+    | [(he, hw), ...tl] =>
+      w < hw ? [(e, w), ...p] : [(he, hw), ...insert(tl, e, w)]
+    };
+};
+
+type binary_tree('a) =
+  | Leaf('a)
+  | Node(binary_tree('a), binary_tree('a));
+
+let rec huffman_tree = q =>
+  switch q {
+  | [] => raise(Not_found)
+  | [(n, _)] => n
+  | [(n1, w1), (n2, w2), ...tl] =>
+    huffman_tree(PriorityQueue.insert(tl, Node(n1, n2), w1 + w2))
+  };
+
+let huffman_code = t => {
+  let rec aux = (acc, c, t) =>
+    switch t {
+    | Leaf(s) => [(s, c), ...acc]
+    | Node(l, r) => aux(acc, c ++ "0", l) @ aux(acc, c ++ "1", r)
+    };
+  aux([], "", t);
+};
+
+let huffman = (fs: list((string, int))) : list((string, string)) => {
+  let q =
+    List.fold_left((q, (e, w)) => PriorityQueue.insert(q, Leaf(e), w), [], fs);
+  huffman_code(huffman_tree(q));
 };

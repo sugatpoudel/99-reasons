@@ -14,7 +14,7 @@ module StringOfList = {
 let main = () => {
   let fs = [("a", 45), ("b", 13), ("c", 12), ("d", 16), ("e", 9), ("f", 5)];
   let result = Logic.huffman(fs);
-  let string_of_tup = ((e, w)) => sprintf("(%s, %d)", e, w);
+  let string_of_tup = ((s, c)) => sprintf("{%s: '%s'}", s, c);
   StringOfList.of_list(result, string_of_tup) |> print_endline;
 };
 
