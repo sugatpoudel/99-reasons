@@ -12,10 +12,19 @@ module StringOfList = {
 };
 
 let main = () => {
-  let fs = [("a", 45), ("b", 13), ("c", 12), ("d", 16), ("e", 9), ("f", 5)];
-  let result = Logic.huffman(fs);
-  let string_of_tup = ((s, c)) => sprintf("{%s: '%s'}", s, c);
-  StringOfList.of_list(result, string_of_tup) |> print_endline;
+  let result = Trees.cbal_tree(4);
+
+  let rec string_of_tree = (tree, to_str) => {
+    switch tree {
+    | Trees.Empty => "Empty"
+    | Trees.Node(v, l, r) => sprintf("Node('%s', %s, %s)", to_str(v), string_of_tree(l, to_str), string_of_tree(r, to_str))
+    };
+  };
+
+  printf("Length: %d\n", List.length(result));
+
+  let string_of_char_tree = (tree) => string_of_tree(tree, c => c);
+  StringOfList.of_list(result, string_of_char_tree) |> print_endline;
 };
 
 main();

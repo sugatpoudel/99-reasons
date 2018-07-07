@@ -1,7 +1,7 @@
 OO=ocamlopt
 PP=refmt --print binary
 COMPILE=$(OO) -pp "$(PP)"
-SOURCES=lists.cmx arithmetic.cmx logic.cmx tests.cmx
+SOURCES=lists.cmx arithmetic.cmx logic.cmx trees.cmx tests.cmx
 EXE=out
 
 $(EXE): $(SOURCES)
