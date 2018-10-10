@@ -8,13 +8,13 @@ type binary_tree('a) =
    55. Construct a list of all completely balanced binary trees for the
        given number of nodes.
 
-    Since we are only worries about balanced binary trees, any difference
+    Since we are only worried about balanced binary trees, any difference
     between the length of sibling subtrees will be at most one.
 
     For any given value of i, discounting the parent node we can recursively
-    call cbal_tree for it's left and right sub-trees. 
-    
-    In the case when (i - 1) is even then we can simply get 
+    call cbal_tree for it's left and right sub-trees.
+
+    In the case when (i - 1) is even then we can simply get
     cbal_tree((i - 1) / 2) and combine the result for as the left and right subtrees.
 
     In the case when (i - 1) is odd then we will need to find cbal_tree
@@ -41,4 +41,23 @@ let cbal_tree = (i: int) : list(binary_tree(string)) => {
       combine(l, r) @ combine(r, l);
     };
   aux(i);
+};
+
+/**
+ * 56. Symmetric binary trees
+ * 
+ * A tree is considered symmetric when one side of the tree is a mirror image
+ * of the other. Write a function that checks whether a given binary tree is
+ * symmetric.
+ */
+let is_symmetric = (t : binary_tree('a)) : bool => {
+  let rec aux = (l, r) => switch (l, r) {
+  | (Empty, Empty) => true
+  | (Node(_, l1, r1), Node(_, l2, r2)) => aux(l1, r2) && aux(r1, l2)
+  | _ => false
+  };
+  switch t {
+  | Empty => true
+  | Node(_, l, r) => aux(l, r)
+  };
 };

@@ -12,8 +12,6 @@ module StringOfList = {
 };
 
 let main = () => {
-  let result = Trees.cbal_tree(4);
-
   let rec string_of_tree = (tree, to_str) => {
     switch tree {
     | Trees.Empty => "Empty"
@@ -21,10 +19,8 @@ let main = () => {
     };
   };
 
-  printf("Length: %d\n", List.length(result));
-
-  let string_of_char_tree = (tree) => string_of_tree(tree, c => c);
-  StringOfList.of_list(result, string_of_char_tree) |> print_endline;
+  /* let string_of_char_tree = (tree) => string_of_tree(tree, c => c); */
+  /* StringOfList.of_list(result, string_of_char_tree) |> print_endline; */
 };
 
 main();
