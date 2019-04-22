@@ -61,3 +61,20 @@ let is_symmetric = (t : binary_tree('a)) : bool => {
   | Node(_, l, r) => aux(l, r)
   };
 };
+
+/**
+ * 57. Construct a binary search tree from a list of integers
+ * 
+ * Simple insertion algorithm that does not re-balance tree thus
+ * for a sorted list, we would essentially have a linked list.
+ */
+let construct = (lst : list(int)) : binary_tree(int) => {
+  let rec insert = (t, k) => 
+    switch t {
+    | Empty => Node(k, Empty, Empty)
+    | Node(v, l, r) when k == v => t
+    | Node(v, l, r) when k < v => Node(v, insert(l, k), r)
+    | Node(v, l, r) => Node(v, l, insert(r, k))
+    };
+  List.fold_left((t, i) => insert(t, i), Empty, lst);
+};
